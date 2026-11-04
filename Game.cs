@@ -155,6 +155,19 @@ public class Game : GameWindow
         // TODO (T3): la clic stânga, obiectul selectat se mută în punctul din lume aflat sub cursor
         //            (folosiți ScreenToWorld; Depth nu se schimbă)
 
+        // T3 Semnul minus este necesar deoarece axa Y a ecranului este orientată în jos, pe când axa Y din OpenGL (NDC) este orientată în sus.
+        if (MouseState.IsButtonPressed(MouseButton.Left))
+        {
+            Vector2 mouseWorldPos = ScreenToWorld(MouseState.Position);
+            sel.Transform.Position = mouseWorldPos; // Adâncimea (Depth) rămâne neschimbată
+        }
+
+
+
+
+
+
+
         // TODO (T4, facultativ): clic dreapta = pivot; tasta P ținută = rotație în jurul pivotului
 
         // --- Camera: tastatura și rotița (secțiunea 6.2) -----------------------------
@@ -235,7 +248,22 @@ public class Game : GameWindow
     private Vector2 ScreenToWorld(Vector2 mousePixels)
     {
         // TODO (T3): pasul 1 (pixel → NDC), apoi pasul 2 (NDC → lume, cu inversa lui view * projection)
-        return Vector2.Zero;
+
+        float ndcX = (2.0f * mousePixels.X / ClientSize.X) - 1.0f;
+        float ndcY = 1.0f - (2.0f * mousePixels.Y / ClientSize.Y);
+        Vector4 ndcPoint = new Vector4(ndcX, ndcY, 0.0f, 1.0f);
+
+        Matrix4 viewProjection = _camera.ViewMatrix * _camera.ProjectionMatrix;
+        Matrix4 invViewProj = Matrix4.Invert(viewProjection);
+
+        Vector4 worldPoint = ndcPoint * invViewProj;
+        if (worldPoint.W != 0.0f)
+        {
+            worldPoint.X /= worldPoint.W;
+            worldPoint.Y /= worldPoint.W;
+        }
+        
+        return new Vector2(worldPoint.X, worldPoint.Y);
     }
 
     /// <summary>Tasta R: obiectele revin la transformările inițiale, camera la starea inițială.</summary>
