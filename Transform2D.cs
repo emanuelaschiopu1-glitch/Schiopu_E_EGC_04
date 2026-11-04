@@ -18,7 +18,7 @@ public class Transform2D
     public Matrix4 ModelMatrix =>
         // TODO (T1): scalare, apoi rotație, apoi translație
 
-        // Dacă am aplica translația înaintea rotației, obiectul nu s-ar mai roti pe loc ci ar orbita în jurul originii lumii (0, 0).
+        // T1 Dacă am aplica translația înaintea rotației, obiectul nu s-ar mai roti pe loc ci ar orbita în jurul originii lumii (0, 0).
         Matrix4.CreateScale(Scale.X, Scale.Y, 1.0f) *
         Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(Rotation)) *
         Matrix4.CreateTranslation(Position.X, Position.Y, Depth);

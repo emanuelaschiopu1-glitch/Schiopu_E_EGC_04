@@ -116,6 +116,29 @@ public class Game : GameWindow
 
         // TODO (T2): Q / E rotesc obiectul, Z / X îl scalează
 
+        // T2 Scalarea folosește înmulțirea pentru redimensionare proporțională, adunarea ar efectua o translație.
+
+        float speedMultiplier = (KeyboardState.IsKeyDown(Keys.LeftShift) || KeyboardState.IsKeyDown(Keys.RightShift)) ? 2.5f : 1.0f;
+        float rotSpeed = 90.0f * speedMultiplier;
+
+        if (KeyboardState.IsKeyDown(Keys.Q)) sel.Transform.Rotation += rotSpeed * dt;
+        if (KeyboardState.IsKeyDown(Keys.E)) sel.Transform.Rotation -= rotSpeed * dt;
+
+        float scaleSpeed = 1.0f * speedMultiplier;
+        if(KeyboardState.IsKeyDown(Keys.Z))
+        {
+            sel.Transform.Scale -= new Vector2(scaleSpeed * dt);
+
+            sel.Transform.Scale = Vector2.ComponentMax(sel.Transform.Scale, new Vector2(0.05f));
+
+        }
+
+        if (KeyboardState.IsKeyDown(Keys.X))
+        {
+            sel.Transform.Scale += new Vector2(scaleSpeed * dt);
+        }
+
+
         if (KeyboardState.IsKeyPressed(Keys.Tab)) _selected = (_selected + 1) % _scene.Count;
         if (KeyboardState.IsKeyPressed(Keys.O))   _camera.IsPerspective = !_camera.IsPerspective;
         if (KeyboardState.IsKeyPressed(Keys.F))   _wireframe = !_wireframe;
