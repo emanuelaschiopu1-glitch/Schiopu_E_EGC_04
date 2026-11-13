@@ -68,8 +68,32 @@ public class FpsCamera : Camera
         Pitch = Math.Clamp(Pitch, -MaxPitch, MaxPitch);
 
         UpdateVectors();
-    }
+        if (mouse.ScrollDelta.Y != 0.0f)
+        {
+            ChangeFov(-mouse.ScrollDelta.Y * FovStep);
+        }
 
+        // --- 3. Deplasarea: W A S D (TODO 5.6) ------------------------------------
+        Vector3 forward = new Vector3(Front.X, 0.0f, Front.Z);
+        if (forward.LengthSquared > 0.0f)
+        {
+            forward = Vector3.Normalize(forward);
+        }
+
+        Vector3 move = Vector3.Zero;
+        if (keyboard.IsKeyDown(Keys.W)) move += forward;
+        if (keyboard.IsKeyDown(Keys.S)) move -= forward;
+        if (keyboard.IsKeyDown(Keys.D)) move += _right;
+        if (keyboard.IsKeyDown(Keys.A)) move -= _right;
+
+        if (move.LengthSquared > 0.0f)
+        {
+            move = Vector3.Normalize(move);
+            float speed = MoveSpeed * (keyboard.IsKeyDown(Keys.LeftShift) ? SprintFactor : 1.0f);
+            _position += move * speed * dt;
+        }
+
+    }
         // --- 2. FOV: rotița mouse-ului --------------------------------------------
 
         // TODO 5.1 (c): rotița în sus (ScrollDelta.Y > 0) micșorează FOV-ul (efect de zoom)
@@ -88,7 +112,7 @@ public class FpsCamera : Camera
             return MathHelper.RadiansToDegrees(hFovRad);
         }
     }
-
+    //
 
 
         // --- 3. Deplasarea: W A S D ---------------------------------------------------
@@ -97,7 +121,15 @@ public class FpsCamera : Camera
         //           apoi deplasarea cu viteză constantă, independentă de numărul de cadre pe secundă.
         //           Pași: (1) forward; (2) vectorul "move" = suma direcțiilor tastelor apăsate
         //           (W +forward, S -forward, D +_right, A -_right); (3) normalizați "move";
-        //           (4) _position += move * viteză * dt (viteza crește de SprintFactor ori cu Shift stânga).
+        //
+        //   (4) _position += move * viteză * dt (viteza crește de SprintFactor ori cu Shift stânga).
+
+
+
+
+
+
+
 
         // TODO 5.7 (facultativ): în zbor liber (FreeFly), "forward" este chiar _front,
         //           iar Space urcă și Ctrl stânga coboară (pe axa Y a lumii, WorldUp).
