@@ -50,7 +50,14 @@ public class FpsCamera : Camera
         Reset();
     }
 
-
+    public void SetPose(Vector3 position, Vector3 front)
+    {
+        _position = position;
+        front = Vector3.Normalize(front);
+        Pitch = MathHelper.RadiansToDegrees(MathF.Asin(Math.Clamp(front.Y, -1f, 1f)));
+        Yaw = MathHelper.RadiansToDegrees(MathF.Atan2(front.Z, front.X));
+        UpdateVectors();
+    }
     public override string Name => FreeFly ? "FPS – zbor liber" : "FPS – mers";
 
     /// <summary>Matricea view: camera aflată în Position privește spre punctul Position + Front.</summary>

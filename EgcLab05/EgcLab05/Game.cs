@@ -16,6 +16,7 @@ public class Game : GameWindow
     // Camerele (nu depind de OpenGL, pot fi create imediat).
     private readonly FpsCamera _fps = new();
     // TEMA: aici se adaugă camera orbită (private readonly OrbitCamera _orbit = new();)
+    private readonly OrbitCamera _orbit = new();
     private Camera _active;                        // camera folosită la desenare
 
     // Obiectele care folosesc OpenGL se creează în OnLoad (abia atunci există contextul OpenGL).
@@ -66,7 +67,7 @@ public class Game : GameWindow
         GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
         _fps.Resize(ClientSize.X, ClientSize.Y);
         // TEMA: și camera orbită trebuie să afle raportul de aspect
-
+        _orbit.Resize(ClientSize.X, ClientSize.Y);
         _shader = Shader.FromFiles("Shaders/shader.vert", "Shaders/shader.frag");
 
         BuildScene();
@@ -145,7 +146,9 @@ public class Game : GameWindow
 
         GL.Viewport(0, 0, e.Width, e.Height);
         _fps.Resize(e.Width, e.Height);     // proiecția se adaptează la noul raport de aspect
+        _orbit.Resize(e.Width, e.Height);
         // TEMA: și camera orbită trebuie să afle noul raport de aspect
+
         _titleDirty = true;
     }
 
@@ -241,6 +244,18 @@ public class Game : GameWindow
         // TEMA: tasta V comută între camera FPS și camera orbită (vezi textul laboratorului).
         if (kb.IsKeyPressed(Keys.V))
         {
+            if (_active == _fps)
+            {
+                _orbit.SyncFromFps(_fps.Position, _fps.Front, 5.0f);
+                _active = _orbit;
+                CursorState = CursorState.Normal;
+            }
+            else
+            {
+                _fps.SetPose(_orbit.Position, _orbit.Front);
+                _active = _fps;
+                CursorState = CursorState.Grabbed;
+            }
             ConsolePanel.PrintMessage("camera orbită nu este încă implementată (tema)");
         }
     }
