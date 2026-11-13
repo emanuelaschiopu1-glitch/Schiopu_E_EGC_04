@@ -50,6 +50,7 @@ public class FpsCamera : Camera
         Reset();
     }
 
+
     public override string Name => FreeFly ? "FPS – zbor liber" : "FPS – mers";
 
     /// <summary>Matricea view: camera aflată în Position privește spre punctul Position + Front.</summary>
@@ -73,7 +74,7 @@ public class FpsCamera : Camera
             ChangeFov(-mouse.ScrollDelta.Y * FovStep);
         }
 
-        // --- 3. Deplasarea: W A S D (TODO 5.6) ------------------------------------
+        // todo 6
         Vector3 forward = new Vector3(Front.X, 0.0f, Front.Z);
         if (forward.LengthSquared > 0.0f)
         {
@@ -86,6 +87,15 @@ public class FpsCamera : Camera
         if (keyboard.IsKeyDown(Keys.D)) move += _right;
         if (keyboard.IsKeyDown(Keys.A)) move -= _right;
 
+        if (move.LengthSquared > 0.0f)
+        {
+            move = Vector3.Normalize(move);
+            float speed = MoveSpeed * (keyboard.IsKeyDown(Keys.LeftShift) ? SprintFactor : 1.0f);
+            _position += move * speed * dt;
+        }
+
+
+        //todo 7
         if (move.LengthSquared > 0.0f)
         {
             move = Vector3.Normalize(move);
@@ -134,6 +144,9 @@ public class FpsCamera : Camera
         // TODO 5.7 (facultativ): în zbor liber (FreeFly), "forward" este chiar _front,
         //           iar Space urcă și Ctrl stânga coboară (pe axa Y a lumii, WorldUp).
  
+
+
+
 
     /// <summary>
     /// Recalculează baza camerei din yaw și pitch (unghiuri Euler -> vector de direcție).
