@@ -63,7 +63,9 @@ public class FpsCamera : Camera
         // TODO 5.5 (a): deplasarea pe orizontală modifică yaw, cea pe verticală modifică pitch.
         //               Atenție: pe ecran Y crește în jos, iar pitch pozitiv înseamnă privire în sus.
         //               Apoi limitați pitch-ul la intervalul [-MaxPitch, MaxPitch].
-
+        Yaw += mouseDelta.X * MouseSensitivity;
+        Pitch -= mouseDelta.Y * MouseSensitivity;
+        Pitch = Math.Clamp(Pitch, -MaxPitch, MaxPitch);
 
         UpdateVectors();
     }
@@ -112,6 +114,18 @@ public class FpsCamera : Camera
         _front = -Vector3.UnitZ;
         _right = Vector3.UnitX;
         _up = Vector3.UnitY;
+        float yawRad = MathHelper.DegreesToRadians(Yaw);
+        float pitchRad = MathHelper.DegreesToRadians(Pitch);
+
+        Vector3 front;
+        front.X = MathF.Cos(pitchRad) * MathF.Cos(yawRad);
+        front.Y = MathF.Sin(pitchRad);
+        front.Z = MathF.Cos(pitchRad) * MathF.Sin(yawRad);
+
+        _front = Vector3.Normalize(front);
+        _right = Vector3.Normalize(Vector3.Cross(_front, WorldUp)); // sau Vector3.UnitY
+        _up = Vector3.Normalize(Vector3.Cross(_right, _front));
+
     }
 
     public override void Reset()
